@@ -1,0 +1,66 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<style>
+    svg.text {
+        display: block; 
+        font-size: inherit; 
+    }
+</style>
+			
+<br>
+<br>
+<br>
+<div class="page-inner" data-flow="{{ selected_flow.id }}">
+    <h4 class="page-title">{{ selected_flow.title }}</h4>
+    <div class="card"> 
+        <div class="card-body">
+            <svg id="workFlow" viewBox="0, 0, 800, 500">
+                <!-- <svg height = "1800" width = "1000">-->
+                <g class="flowchart" transform="translate(345,25)"> 
+                    {% for state in selected_flow.states.all %}
+                    <g class="rect_process_i" transform="translate(-60, {{ state.rect_loc }})" data-loc="{{ state.rect_loc }}">
+                        <rect rx="5" ry="5" x="77" y="84.5" width="64.48" height="30" style="fill: #fff;"></rect>
+                        <g class="rect_process_text_i" transform="translate(4,20)">
+                            <text x="79" y="84">
+                                <tspan xml:space="preserve" style="font-size:12px">{{ state.label }}</tspan>
+                            </text> 
+                        </g>
+                    </g>
+                    {% if forloop.first %}
+                    {% else %}
+                    <g class="vertical_arrow_connector_i" transform="translate(0, {{ state.connector_loc }})" data-loc="{{ state.connector_loc }}">
+                        <line x1="50" y1="40" x2="50" y2="100" stroke="#000000" stroke-width="2"></line>
+                        <polygon points="48.5 100, 51.5 100, 50 103" stroke="#000000" stroke-width="2" fill="#000000"></polygon>
+                    </g>
+                    {% endif %}
+                    {% endfor %}
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <div class="card"> 
+        <div class="card-body" style="display: flex; align-items: center; gap: 2%;">
+            <div class="form-group form-group-default" style="margin-bottom:0"> 
+                <input id="State" type="text" name="state" class="form-control" placeholder="Add new state" style="margin-top: 6px; margin-bottom: 6px;">
+            </div>
+            <button class="btn btn-primary" id="createState">Create</button>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<!-- Atlantis DEMO methods, don't include it in your project! -->
+<script src="/static/assets/js/setting-demo.js"></script>
+<script src="/static/assets/js/demo.js"></script>
+ 
+{% endblock javascripts %}

@@ -1,0 +1,95 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+    .align-items-center {
+        justify-content: left !important;
+    }
+
+    .icon-big {
+        width: 100%;
+        height: 100%;
+        font-size: 2.2em;
+        min-height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<div class="page-inner">
+    <h4 class="page-title">Workflows</h4>
+    <div class="row justify-content-center align-items-center">
+        {% for flow in flows %}
+        <div class="col-md-3 pl-md-0">
+            <div class="card card-pricing">
+                <div class="card-header">
+                    <h4 class="card-title">{{ flow.title }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="icon-big text-center icon-success bubble-shadow-small">
+                        <i class="flaticon-graph" style="color: #fff;"></i>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="social-media">
+                        <a class="btn btn-danger btn-sm btn-link" rel="publisher" href="{% url 'view_flow' flow.id %}"> 
+                            <span class="btn-label just-icon"><i class="fas fa-play"></i> </span> 
+                        </a>
+                        <a class="btn btn-primary btn-link" rel="publisher" href="{% url 'shipping_flows' flow.id %}"> 
+                            <span class="btn-label just-icon"><i class="far fa-edit"></i> </span> 
+                        </a>
+                        <a class="btn btn-danger btn-sm btn-link" rel="publisher" href="#"> 
+                            <span class="btn-label just-icon"><i class="fas fa-expand-arrows-alt"></i></span> 
+                        </a> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <!--<div class="col-md-3 pr-md-0">
+            <div class="card card-pricing">
+                <div class="card-header">
+                    <h4 class="card-title">Issue Tracking Flow</h4>
+                </div>
+                <div class="card-body">
+                    <div class="icon-big text-center icon-success bubble-shadow-small">
+                        <i class="flaticon-interface-6" style="color: #fff;"></i>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="social-media">
+                        <a class="btn btn-danger btn-sm btn-link" rel="publisher" href="#"> 
+                            <span class="btn-label just-icon"><i class="fas fa-play"></i> </span> 
+                        </a>
+                        <a class="btn btn-primary btn-link" rel="publisher" href="#"> 
+                            <span class="btn-label just-icon"><i class="far fa-edit"></i> </span> 
+                        </a>
+                        <a class="btn btn-danger btn-sm btn-link" rel="publisher" href="#"> 
+                            <span class="btn-label just-icon"><i class="fas fa-expand-arrows-alt"></i></span> 
+                        </a> 
+                    </div>
+                </div>
+            </div>
+        </div>-->
+    </div>
+
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<!-- Atlantis DEMO methods, don't include it in your project! -->
+<script src="/static/assets/js/setting-demo.js"></script>
+<script src="/static/assets/js/demo.js"></script>
+<script src="/static/assets/js/default.js"></script>
+
+{% endblock javascripts %}

@@ -1,0 +1,131 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<style>
+    svg.text {
+        display: block; 
+        font-size: inherit; 
+    }
+</style>
+			
+<br>
+<br>
+<br>
+<div class="page-inner" data-flow="{{ selected_flow.id }}">
+    <h4 class="page-title">{{ selected_flow.title }}</h4>
+    <div class="card"> 
+        <div class="card-body">
+            <svg id="workFlow" viewBox="0, 0, 800, 500">
+                <!-- <svg height = "1800" width = "1000">-->
+                <g class="flowchart" transform="translate(345,25)"> 
+                    {% for state in selected_flow.states.all %}
+                    <g class="rect_process_i" transform="translate(-60, {{ state.rect_loc }})" data-loc="{{ state.rect_loc }}">
+                        <rect rx="5" ry="5" x="77" y="84.5" width="64.48" height="30" style="fill: #fff;"></rect>
+                        <g class="rect_process_text_i" transform="translate(4,20)">
+                            <text x="79" y="84">
+                                <tspan xml:space="preserve" style="font-size:12px">{{ state.label }}</tspan>
+                            </text> 
+                        </g>
+                    </g>
+                    {% if forloop.first %}
+                    <g class="vertical_arrow_connector_i" transform="translate(0, 75)" data-loc="75">
+                        <line x1="50" y1="40" x2="50" y2="100" stroke="#000000" stroke-width="2"></line>
+                        <polygon points="48.5 100, 51.5 100, 50 103" stroke="#000000" stroke-width="2" fill="#000000"></polygon>
+                    </g> 
+                    {% else %}
+                    
+                    <g class="vertical_arrow_connector_i" transform="translate(0, {{ state.connector_loc }})" data-loc="{{ state.connector_loc }}">
+                        <line x1="50" y1="40" x2="50" y2="100" stroke="#000000" stroke-width="2"></line>
+                        <polygon points="48.5 100, 51.5 100, 50 103" stroke="#000000" stroke-width="2" fill="#000000"></polygon>
+                    </g> 
+                    {% endif %}
+                    {% endfor %}
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <div class="card"> 
+        <div class="card-body" style="display: flex; align-items: center; gap: 2%;">
+            <div class="form-group form-group-default" style="margin-bottom:0"> 
+                <input id="State" type="text" name="state" class="form-control" placeholder="Add new state" style="margin-top: 6px; margin-bottom: 6px;" required>
+            </div>
+            <button class="btn btn-primary" id="createState" type="submit">Create</button>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<!-- Atlantis DEMO methods, don't include it in your project! -->
+<script src="/static/assets/js/setting-demo.js"></script>
+<script src="/static/assets/js/demo.js"></script>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+
+    $(document).on('click', '#createState', function(event){
+        event.preventDefault(); 
+        var stateName = $("#State").map(function() {
+            return $(this).val();
+        }).get(); 
+        console.log(stateName);
+        
+        if (!$(".flowchart").find(".rect_process_i").length == 0) {
+            var rect_loc = parseInt($(".flowchart").find(".rect_process_i:first").attr('data-loc')) + 96;
+            console.log($(".flowchart").find(".rect_process_i:first").attr('data-loc'));
+            console.log(rect_loc)
+        }
+        else {
+            var rect_loc = 0;
+        }
+        
+        //var connector_loc = parseInt($(".flowchart").find(".vertical_arrow_connector_i:last").attr('data-loc')) + 96;
+        console.log(($(".flowchart").find(".vertical_arrow_connector_i").length))
+
+        var connector_loc = ($(".flowchart").find(".vertical_arrow_connector_i").length + 1) * 96 + 75
+        console.log($(".flowchart").find(".vertical_arrow_connector_i:first").attr('data-loc'));
+        console.log(connector_loc)
+
+        $.ajax({
+            type: 'POST',
+            url: '/new-state/' + $('.page-inner').attr('data-flow') + '/',
+            data: {'state[]': stateName, 'rect_loc[]': rect_loc, 'connector_loc[]': connector_loc, 'csrfmiddlewaretoken': csrftoken},
+            dataType: 'json',
+            success: function(response){
+                //$('<g class="rect_process_i" transform="translate(-60, '+ rect_loc +')" data-loc="'+ rect_loc +'}"><rect rx="5" ry="5" x="77" y="84.5" width="64.48" height="30" style="fill: #fff;"></rect><g class="rect_process_text_i" transform="translate(4,20)"><text x="79" y="84"><tspan xml:space="preserve" style="font-size:12px">'+ stateName +'</tspan></text> </g></g><g class="vertical_arrow_connector_i" transform="translate(0, '+ connector_loc +')" data-loc="' + connector_loc + '"><line x1="50" y1="40" x2="50" y2="100" stroke="#000000" stroke-width="2"></line><polygon points="48.5 100, 51.5 100, 50 103" stroke="#000000" stroke-width="2" fill="#000000"></polygon></g>').insertAfter($(".flowchart").find(".vertical_arrow_connector_i:first"));
+                $(".page-inner").load(location.href + " .page-inner >*", "");  
+            },
+            error: function(data){ 
+                console.log("Oops, something went wrong!");
+            },
+    
+        }); 
+    });
+
+</script> 
+{% endblock javascripts %}
